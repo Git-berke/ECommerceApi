@@ -1,11 +1,19 @@
 using ECommerceApi.Data; // ECommerceDbContext sýnýfýnýzý kullanabilmek için ekledik
 using Microsoft.EntityFrameworkCore; // AddDbContext ve UseSqlServer metotlarý için ekledik
+using ECommerceApi.Data;
+using ECommerceApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // DbContext'i servis koleksiyonuna ekliyoruz
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ProductService'i baðýmlýlýk enjeksiyonuna ekliyoruz
+// AddScoped: Her HTTP isteði için ProductService'in yeni bir örneði oluþturulur.
+builder.Services.AddScoped<IProductService, ProductService>();
+
+
 
 // Add services to the container.
 builder.Services.AddControllers();
