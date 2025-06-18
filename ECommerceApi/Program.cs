@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ECommerceDbContext>(options =>
 // AddScoped: Her HTTP isteði için ProductService'in yeni bir örneði oluþturulur.
 builder.Services.AddScoped<IProductService, ProductService>();
 
+builder.Services.AddScoped<ICategoryService, CategoryService>(); // Yeni eklediðimiz satýr
 
 
 // Add services to the container.

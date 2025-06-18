@@ -12,7 +12,7 @@ namespace ECommerceApi.Services
     {
         private readonly ECommerceDbContext _context;
 
-        // DbContext'i bağımlılık enjeksiyonu ile alıyoruz
+        // DbContext'i dependency injection ile alıyoruz
         public ProductService(ECommerceDbContext context)
         {
             _context = context;
