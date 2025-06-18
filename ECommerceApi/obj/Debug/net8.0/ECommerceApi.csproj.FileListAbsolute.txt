@@ -171,3 +171,5 @@ C:\Users\MG\source\repos\ECommerceApi\ECommerceApi\obj\Debug\net8.0\refint\EComm
 C:\Users\MG\source\repos\ECommerceApi\ECommerceApi\obj\Debug\net8.0\ECommerceApi.pdb
 C:\Users\MG\source\repos\ECommerceApi\ECommerceApi\obj\Debug\net8.0\ECommerceApi.genruntimeconfig.cache
 C:\Users\MG\source\repos\ECommerceApi\ECommerceApi\obj\Debug\net8.0\ref\ECommerceApi.dll
+C:\Users\MG\source\repos\ECommerceApi\ECommerceApi\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\MG\source\repos\ECommerceApi\ECommerceApi\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

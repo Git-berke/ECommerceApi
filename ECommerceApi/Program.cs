@@ -1,7 +1,9 @@
-using ECommerceApi.Data; // ECommerceDbContext sýnýfýnýzý kullanabilmek için ekledik
-using Microsoft.EntityFrameworkCore; // AddDbContext ve UseSqlServer metotlarý için ekledik
 using ECommerceApi.Data;
 using ECommerceApi.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // JWT için gerekli
+using Microsoft.IdentityModel.Tokens; // JWT için gerekli
+using System.Text; // Encoding.UTF8 için gerekli
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +11,32 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ProductService'i baðýmlýlýk enjeksiyonuna ekliyoruz
-// AddScoped: Her HTTP isteði için ProductService'in yeni bir örneði oluþturulur.
+// Servisleri baðýmlýlýk enjeksiyonuna ekliyoruz
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAuthService, AuthService>(); // AuthService'i ekledik!
 
-builder.Services.AddScoped<ICategoryService, CategoryService>(); // Yeni eklediðimiz satýr
+// JWT Kimlik Doðrulamasýný Yapýlandýrma
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true, // Token'ý veren tarafý doðrula
+        ValidateAudience = true, // Token'ý alýcý tarafý doðrula
+        ValidateLifetime = true, // Token'ýn geçerlilik süresini doðrula
+        ValidateIssuerSigningKey = true, // Ýmza anahtarýný doðrula
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], // appsettings'ten oku
+        ValidAudience = builder.Configuration["Jwt:Audience"], // appsettings'ten oku
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])) // appsettings'ten oku
+    };
+});
+
+// Yetkilendirme (Authorization) servisini ekle
+builder.Services.AddAuthorization();
 
 
 // Add services to the container.
@@ -33,6 +56,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Kimlik doðrulama ve yetkilendirme middleware'lerini ekleyin
+// ÖNEMLÝ: UseRouting, UseCors (varsa) ve UseAuthentication/UseAuthorization sýralamasý kritiktir.
+// Genellikle UseRouting'den sonra, UseEndpoints'ten önce gelirler.
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
